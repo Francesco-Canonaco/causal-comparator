@@ -7,6 +7,7 @@ from causal_comparator.utils import SHD_vectorized
 from sklearn.metrics import mean_absolute_error
 
 def test_edge_perturbation_simulator_logic():
+    # TODO add one line docstring on what's the goal of this test
     n_nodes = 12
     n_pos = 3
     seed = 42
@@ -98,6 +99,7 @@ def test_delta_structure_recovery_logic():
 
 @pytest.mark.parametrize("seed", range(5))
 def test_simulation_graphs_recovery(seed):
+    # TODO add one line docstring on what's the goal of this test
     n_nodes = 10
     n_samples = 5000
     n_positives = 2
