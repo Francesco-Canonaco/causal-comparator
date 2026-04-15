@@ -3,8 +3,10 @@ import lingam
 import pytest
 import pandas as pd
 from causal_comparator.data_generation import EdgePerturbationSimulator, BaseSimulator
+from causal_comparator.utils import SHD_vectorized
+from sklearn.metrics import mean_absolute_error
 
-def test_simulator_logic():
+def test_edge_perturbation_simulator_logic():
     n_nodes = 12
     n_pos = 3
     seed = 42
@@ -34,7 +36,7 @@ def test_simulator_logic():
     mask_changed = actual_deletions | actual_additions
     assert np.all(B1[~mask_changed] == B2[~mask_changed]), "Untouched edges were modified."
 
-def test_delta_structure_recovery():
+def test_delta_structure_recovery_logic():
     """
     Verifies that the new class architecture can correctly recover 
     the ground truth delta from high-fidelity (N=10k) shuffled data.
@@ -94,3 +96,57 @@ def test_delta_structure_recovery():
     )
 
 
+@pytest.mark.parametrize("seed", range(5))
+def test_simulation_graphs_recovery(seed):
+    n_nodes = 10
+    n_samples = 5000
+    n_positives = 2
+    threshold = 1e-6
+
+    rng = np.random.default_rng(seed)
+    sim = EdgePerturbationSimulator(n_nodes=n_nodes, rng=rng)
+
+    B1_true, B2_true, delta_true = sim.create_graphs(
+        edge_prob=0.3,
+        n_positives=n_positives
+    )
+
+    results = []
+    for B_true in [B1_true, B2_true]:
+        df, p = sim.simulate_data(B_true, n_samples)
+
+        model = lingam.DirectLiNGAM()
+        model.fit(df)
+
+        idx = np.argsort(p)
+        B_est = model.adjacency_matrix_[idx, :][:, idx]
+        results.append(B_est)
+
+    B1_est, B2_est = results
+
+    for name, B_t, B_e in [("B1", B1_true, B1_est), ("B2", B2_true, B2_est)]:
+        mask = np.abs(B_t) > threshold
+        if np.any(mask):
+            mae = mean_absolute_error(B_t[mask], B_e[mask])
+            assert mae < 0.05, f"Seed {seed}: {name} MAE {mae:.4f} too high."
+
+        shd_val = SHD_vectorized(
+            B_t, B_e,
+            threshold=threshold,
+            double_for_anticausal=True
+        )
+        assert shd_val <= 2, f"Seed {seed}: {name} SHD {shd_val} too high."
+
+    e1_bin = (np.abs(B1_est) > threshold).astype(int)
+    e2_bin = (np.abs(B2_est) > threshold).astype(int)
+    delta_est = np.logical_and(e1_bin == 1, e2_bin == 0).astype(int)
+
+    tp = np.sum((delta_true == 1) & (delta_est == 1))
+    fp = np.sum((delta_true == 0) & (delta_est == 1))
+    fn = np.sum((delta_true == 1) & (delta_est == 0))
+
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+
+    assert recall >= 0.9, f"Seed {seed}: delta recall too low ({recall:.3f})"
+    assert precision >= 0.9, f"Seed {seed}: delta precision too low ({precision:.3f})"
