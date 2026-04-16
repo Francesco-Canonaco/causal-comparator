@@ -31,8 +31,7 @@ class CausalComparator:
     
     def _fit_bootstrap(self, data, n_sampling):
         base_model = self.model_class(**self.model_kwargs)
-        model = lingam.BootstrapModel(base_model, n_sampling=n_sampling)
-        model.fit(data)
+        model = base_model.bootstrap(data, n_sampling=n_sampling)
         return model.get_probabilities()
     
     def estimate_naive(self):
