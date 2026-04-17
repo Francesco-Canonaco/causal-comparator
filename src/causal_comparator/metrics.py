@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score, average_precision_score
 
-
+#TODO: ADD TYPING 
 def evaluate_binary_classification(y_true, y_scores, optimize=True):
     """
     Generic evaluator for binary classification tasks.
