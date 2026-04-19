@@ -7,14 +7,15 @@ def evaluate_binary_classification(y_true:ArrayLike, y_scores:ArrayLike, optimiz
     """Evaluate the predicted values
 
     Args:
-        y_true (ArrayLike): true labels
-        y_scores (ArrayLike): predicted scores
+        y_true (ArrayLike): True labels
+        y_scores (ArrayLike): Predicted scores
         optimize (bool, optional): Optimization of the threshold when y_score isn't binary. Defaults to True.
 
     Returns:
-        Dict: evaluation of the predictions containing auc_roc, aupr, F1, threshold, precision and recall. 
+        Dict: Evaluation of the predictions containing auc_roc, aupr, F1, threshold, precision and recall. 
     """
-    y_true = np.array(y_true).flatten() # Metrics require 1D arrays for comparison.
+    # Metrics require 1D arrays for comparison.
+    y_true = np.array(y_true).flatten() 
     y_scores = np.array(y_scores).flatten()
 
     # Ranking threshold-independent metrics.
