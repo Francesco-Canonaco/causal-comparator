@@ -210,7 +210,7 @@ __marimo__/
 *.csv
 
 # DSstore
-*..DS_Store
+.DS_Store
 
 # HTML files 
 *.html
