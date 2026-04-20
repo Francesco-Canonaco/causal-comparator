@@ -34,3 +34,4 @@ def SHD_vectorized(
     )
 
     return int(total_diffs - np.sum(reversals))
+
