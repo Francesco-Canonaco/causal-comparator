@@ -10,11 +10,11 @@ def test_mechanism_perturbation_simulator_logic():
     """Verifies internal logic for target selection and perturbation."""
     n_nodes = 10
     n_perturbed = 2
-    n_positives = 1
+    n_positives = 2
     sim = MechanismPerturbationSimulator(n_nodes=n_nodes)
     
     B1, B2, y_true = sim.create_graphs(
-        edge_prob=0.5, 
+        edge_prob=0.7, 
         n_perturbed_nodes=n_perturbed, 
         n_positives=n_positives
     )
@@ -62,7 +62,7 @@ def test_simulator_integrity():
     sim = MechanismPerturbationSimulator(n_nodes=n_nodes)
     
     # Generate graphs and data
-    B1, B2, _ = sim.create_graphs(edge_prob=0.6, n_perturbed_nodes=1, n_positives=1)
+    B1, B2, _ = sim.create_graphs(edge_prob=0.6, n_perturbed_nodes=1, n_positives=2)
     df, perm = sim.simulate_data(B1, n_samples)
     
     # Verify the Directed Acyclic Graph (DAG) property
