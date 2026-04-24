@@ -35,3 +35,6 @@ def SHD_vectorized(
 
     return int(total_diffs - np.sum(reversals))
 
+def align_matrix(B_est, p):
+    idx = np.argsort(p)
+    return B_est[idx, :][:, idx]
