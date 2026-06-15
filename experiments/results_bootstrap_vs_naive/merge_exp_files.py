@@ -1,10 +1,10 @@
 import glob
 import pandas as pd
 import os
-
+NODES = 25
 def concatenate_nested_csvs():
     # The '**/' tells Python to look inside 0.15, 0.20, 0.25, etc.
-    file_pattern = "**/grid_results_15nodes_*.csv"
+    file_pattern = f"**/grid_results_{NODES}nodes_*.csv"
     
     print(f"🔍 Searching in: {os.getcwd()}")
     
@@ -30,7 +30,7 @@ def concatenate_nested_csvs():
         combined_df = pd.concat(dataframes, ignore_index=True)
         
         # Save the master file right next to the script
-        output_filename = "MASTER_grid_results_15nodes.csv"
+        output_filename = f"MASTER_grid_results_{NODES}nodes.csv"
         combined_df.to_csv(output_filename, index=False)
         
         print(f"\n🎉 Success! All files concatenated.")

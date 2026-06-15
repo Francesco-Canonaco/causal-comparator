@@ -1,0 +1,11 @@
+GRID_PARAMS = {
+    "n_nodes": [25],
+    "method": ["Naive","Bootstrap"],#, "Bootstrap", "RSBS"], # Treated as independent tasks
+    "seed": range(50),            # Renamed for plotting.py compatibility
+    "n_sampling": [100],
+    "edge_prob": [0.25],
+    "n_perturbed_nodes": [2,3,4],
+    "n_positives": [1,2],
+    "n1": [200], # [100], [200] [300] [400]                
+    "n2": [200], #[100], [200] [300] [400]                  
+}

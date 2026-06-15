@@ -20,7 +20,7 @@ GRID_PARAMS = {
     "n_nodes": [10],              
     "method": ["Naive", "Bootstrap", "RSBS"], # Treated as independent tasks
     "seed": range(10),            # Renamed for plotting.py compatibility
-    "n_sampling": [60],           
+    "n_sampling": [100],           
     "edge_prob": [0.5],           
     "n_perturbed_nodes": [3],     
     "n_positives": [1],           
@@ -30,9 +30,7 @@ GRID_PARAMS = {
 
 OUTPUT_DIR = "./results"
 
-# IMPORTANT: Since CausalComparator now uses 2 cores internally,
-# we set N_JOBS to (Total Cores / 2) to avoid over-subscription.
-# For a 100-core server, 50 is the optimal limit.
+
 N_JOBS = -1  
 
 def run_task(p):
