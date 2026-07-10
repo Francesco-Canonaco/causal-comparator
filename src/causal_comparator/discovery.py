@@ -1,6 +1,6 @@
 import lingam
 import numpy as np
-
+from joblib import Parallel, delayed
 class CausalComparator:
     def __init__(self, data_i, data_j,  model_class = lingam.DirectLiNGAM, **model_kwargs ):
         """
@@ -70,8 +70,11 @@ class CausalComparator:
         Returns:
             np.ndarray: The raw difference matrix in {-1, 0, 1}.
         """
-        self.freq_i = self._fit_base(self.data_i)
-        self.freq_j = self._fit_base(self.data_j)
+        results = Parallel(n_jobs=2)(
+            delayed(self._fit_base)(data)
+            for data in [self.data_i, self.data_j]
+        )
+        self.freq_i, self.freq_j = results
         self.delta = self.freq_i - self.freq_j
         return self.delta
     
@@ -85,8 +88,11 @@ class CausalComparator:
         Returns:
             np.ndarray: Delta matrix representing change in selection probabilities.
         """
-        self.freq_i = self._fit_bootstrap(self.data_i, n_sampling)
-        self.freq_j = self._fit_bootstrap(self.data_j, n_sampling)
+        results = Parallel(n_jobs=2)(
+            delayed(self._fit_bootstrap)(data, n_sampling)
+            for data in [self.data_i, self.data_j]
+        )
+        self.freq_i, self.freq_j = results
         self.delta = self.freq_i - self.freq_j
         return self.delta
     
@@ -111,8 +117,12 @@ class CausalComparator:
         d_i_rs = self.data_i.sample(n_min, random_state = seed) if ni > n_min else self.data_i
         d_j_rs = self.data_j.sample(n_min, random_state = seed) if nj > n_min else self.data_j
         
-        self.freq_i = self._fit_bootstrap(d_i_rs, n_sampling)
-        self.freq_j = self._fit_bootstrap(d_j_rs, n_sampling)
+        # Execute both RSBS bootstrap fits in parallel using 2 cores[cite: 4]
+        results = Parallel(n_jobs=2)(
+            delayed(self._fit_bootstrap)(data, n_sampling)
+            for data in [d_i_rs, d_j_rs]
+        )
+        self.freq_i, self.freq_j = results
         self.delta = self.freq_i - self.freq_j
         return self.delta
 

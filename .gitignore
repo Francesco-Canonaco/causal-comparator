@@ -214,3 +214,7 @@ __marimo__/
 
 # HTML files 
 *.html
+
+# png files
+
+*.png
